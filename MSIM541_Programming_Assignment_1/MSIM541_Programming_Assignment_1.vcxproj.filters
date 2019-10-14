@@ -27,4 +27,18 @@
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="4.dat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="16.dat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="expo.dat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="normal.dat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

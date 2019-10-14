@@ -121,6 +121,12 @@
   <ItemGroup>
     <ClInclude Include="utility.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="16.dat" />
+    <None Include="4.dat" />
+    <None Include="expo.dat" />
+    <None Include="normal.dat" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
