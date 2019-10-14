@@ -30,7 +30,7 @@ float* prob;
 float maxProb = -1;
 
 //Theoretical distributions
-int curveType = 0;
+int curveType = 0; // normal distro default
 int numCurvePoints = 100;
 float* curveX = new float[numCurvePoints];
 float* curveY1 = new float[numCurvePoints]; // for normal function
@@ -220,8 +220,8 @@ void computeProbability(int numIntervals)
 	{
 		endPoints[i] = minimum + (width * i);
 	}
-	// TODO re-init historgram func 
 	// Re-initialize the maximum probability after the number of intervals has been changed
+	// TODO not sure what this is
 
 	// Compute the probability for each interval (update the array prob)
 	// loop thru endPoints array until value is less than endPoints val
@@ -290,6 +290,10 @@ void readFile(string fileName)
 	// Compute the histogram
 	computeProbability(numIntervals);
 
+	// reset theoretical distro parameters to defaults
+	float mu = 0, sigma = 1;  // Normal distribution
+	float lambda = 1;	      // Exponential distribution
+
 	// Compute the theoretical distribution
 	computeNormalFunc(mu, sigma);
 	computeExponentialFunc(lambda);
@@ -306,10 +310,36 @@ void keyboard(unsigned char key, int x, int y)
 void specialKey(int key, int x, int y) // for the arrow keys
 {
 	//Update the parameters and theoretical distributions
+	if (key == GLUT_KEY_LEFT) // decrease mu
+	{
+		mu -= 0.05f;
+	}
+	if (key == GLUT_KEY_RIGHT) // increase mu
+	{
+		mu += 0.05f;
+	}
+	if (key == GLUT_KEY_UP) // increase sigma or lambda
+	{
+		if (curveType == 0)
+		{
+			sigma += 0.05f;
+		}
+		else
+			lambda += 0.05f;
+	}
+	if (key == GLUT_KEY_DOWN) // decrease sigma or lambda
+	{
+		if (curveType == 0)
+		{
+			sigma -= 0.05f;
+		}
+		else
+			lambda -= 0.05f;
+	}
 	glutPostRedisplay();
 }
 
-void topMenuFunc(int id) // TODO menu items
+void topMenuFunc(int id) 
 {
 	exit(0);
 }
@@ -317,16 +347,48 @@ void topMenuFunc(int id) // TODO menu items
 void fileMenuFunction(int id)
 {
 	// Read file
-
+	switch (id)
+	{
+	case 1: readFile("normal.dat");
+		break;
+	case 2: readFile("expo.dat");
+		break;
+	case 3: readFile("4.dat");
+		break;
+	case 4: readFile("16.dat");
+		break;
+		}
 	// Update projection since the data has changed
+	glutPostRedisplay();
+}
 
+void distributionMenuFunction(int id)
+{
+	//choose which theoretical distribution to use
+	switch (id)
+	{
+	case 1: curveType = 0;
+		break;
+	case 2: curveType = 1;
+		break;
+	}
+	// redraw the theoretical distribution curve
 	glutPostRedisplay();
 }
 
 void histogramMenuFunction(int id)
 {
 	// Update the number of intervals and recompute the histogram
-
+	switch (id)
+	{
+	case 1: numIntervals = 30;
+		break;
+	case 2: numIntervals = 40;
+		break;
+	case 3: numIntervals = 50;
+		break;
+	}
+	computeProbability(numIntervals);
 	// Update the projection since the histogram has changed due to the
 	// change of the number of bars
 	glutPostRedisplay();
@@ -334,27 +396,84 @@ void histogramMenuFunction(int id)
 
 void parameterStepMenuFunction(int id)
 {
-	// Update the parameter step size
+	// Update the parameter step size switch case
+	switch (id)
+	{
+	case 1: parameterStep = 0.05f;
+		break;
+	case 2: parameterStep = 0.02f;
+		break;
+	case 3: parameterStep = 0.01f;
+		break;
+	}
+}
+
+void MenuPicker(int id)
+{
+	switch (id)
+	{
+	case 5: topMenuFunc(1);
+		break;
+	}
 }
 
 void createMenu()
 {
 	// Create the menus
+	int file_submenu = glutCreateMenu(fileMenuFunction);
+	glutAddMenuEntry("normal.dat", 1);
+	glutAddMenuEntry("expo.dat", 2);
+	glutAddMenuEntry("4.dat", 3);
+	glutAddMenuEntry("16.dat", 4);
+	int distro_submenu = glutCreateMenu(distributionMenuFunction);
+	glutAddMenuEntry("Normal Distribution", 1);
+	glutAddMenuEntry("Exponential Distribution", 2);
+	int histo_submenu = glutCreateMenu(histogramMenuFunction);
+	glutAddMenuEntry("30 Intervals", 1);
+	glutAddMenuEntry("40 Intervals", 2);
+	glutAddMenuEntry("50 Intervals", 3);
+	int param_submenu = glutCreateMenu(parameterStepMenuFunction);
+	glutAddMenuEntry("0.05", 1);
+	glutAddMenuEntry("0.02", 2);
+	glutAddMenuEntry("0.01", 3);
+	glutCreateMenu(MenuPicker);
+	glutAddSubMenu("File", file_submenu);
+	glutAddSubMenu("Distribution", distro_submenu);
+	glutAddSubMenu("Histogram", histo_submenu);
+	glutAddSubMenu("Parameter Step", param_submenu);
+	glutAddMenuEntry("Exit", 5);
 }
 
-void reshape(int w, int h) // TODO reshape func
+void reshape(int w, int h) 
 {
 	// Set matrix mode and projection
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, width, 0.0, height);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glViewport(0, 0, w, h);
+	width = w;
+	height = h;
 }
 
-int main(int argc, char** argv) // TODO main method
+int main(int argc, char** argv) 
 {
 	//Program initialization
+	init();
 	//GLUT initialization
 	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB);
+	glutInitWindowSize(width, height);
+	glutCreateWindow("MSIM541 Programming Assignment 1");
 	//Set up callbacks
+	glutReshapeFunc(reshape);
+	glutDisplayFunc(display);
+	glutKeyboardFunc(keyboard);
+	glutSpecialFunc(specialKey);
+	createMenu();
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+	readFile("Normal.dat"); // initialize with the normal distribution file
 	//Enter the GLUT main loop
 	glutMainLoop();
-
-	return 0;
 }
