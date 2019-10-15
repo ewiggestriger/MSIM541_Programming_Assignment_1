@@ -192,6 +192,7 @@ void init(void)
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	gluOrtho2D(-100.0, 100.0, -100.0, 100.0);
+	readFile("Normal.dat"); // initialize with the normal distribution file
 }
 
 //Compute the probability for the histogram (vertical axis)
@@ -312,29 +313,29 @@ void specialKey(int key, int x, int y) // for the arrow keys
 	//Update the parameters and theoretical distributions
 	if (key == GLUT_KEY_LEFT) // decrease mu
 	{
-		mu -= 0.05f;
+		mu -= parameterStep;
 	}
 	if (key == GLUT_KEY_RIGHT) // increase mu
 	{
-		mu += 0.05f;
+		mu += parameterStep;
 	}
 	if (key == GLUT_KEY_UP) // increase sigma or lambda
 	{
 		if (curveType == 0)
 		{
-			sigma += 0.05f;
+			sigma += parameterStep;
 		}
 		else
-			lambda += 0.05f;
+			lambda +=parameterStep;
 	}
 	if (key == GLUT_KEY_DOWN) // decrease sigma or lambda
 	{
 		if (curveType == 0)
 		{
-			sigma -= 0.05f;
+			sigma -= parameterStep;
 		}
 		else
-			lambda -= 0.05f;
+			lambda -= parameterStep;
 	}
 	glutPostRedisplay();
 }
@@ -473,7 +474,6 @@ int main(int argc, char** argv)
 	glutSpecialFunc(specialKey);
 	createMenu();
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
-	readFile("Normal.dat"); // initialize with the normal distribution file
 	//Enter the GLUT main loop
 	glutMainLoop();
 }
