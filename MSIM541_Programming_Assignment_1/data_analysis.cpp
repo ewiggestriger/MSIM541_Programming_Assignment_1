@@ -187,14 +187,6 @@ void display(void)
 	glutSwapBuffers();
 }
 
-void init(void) 
-{
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	gluOrtho2D(-100.0, 100.0, -100.0, 100.0);
-	readFile("Normal.dat"); // initialize with the normal distribution file
-}
-
 //Compute the probability for the histogram (vertical axis)
 void computeProbability(int numIntervals)
 {
@@ -216,10 +208,10 @@ void computeProbability(int numIntervals)
 	// Determine the end points for each interval (update the array endPoints)
 	float range = maximum - minimum;
 	//int numberOfEndpoints = range / numIntervals;
-	float width = range / numIntervals;
+	float intWidth = range / numIntervals;
 	for (int i = 0; i < numIntervals; i++)
 	{
-		endPoints[i] = minimum + (width * i);
+		endPoints[i] = minimum + (intWidth * i);
 	}
 	// Re-initialize the maximum probability after the number of intervals has been changed
 	// TODO not sure what this is
@@ -298,6 +290,14 @@ void readFile(string fileName)
 	// Compute the theoretical distribution
 	computeNormalFunc(mu, sigma);
 	computeExponentialFunc(lambda);
+}
+
+void init(void)
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	gluOrtho2D(-100.0, 100.0, -100.0, 100.0);
+	readFile("Normal.dat"); // initialize with the normal distribution file
 }
 
 void keyboard(unsigned char key, int x, int y)
