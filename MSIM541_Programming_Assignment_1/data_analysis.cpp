@@ -85,10 +85,10 @@ void display(void)
 
 	// Draw x and y axes
 	glBegin(GL_LINES); 
-		glVertex2f(axis_x_min/width, axis_y_min/height);
-		glVertex2f(axis_x_max/width, axis_y_min/height);
-		glVertex2f(axis_x_min/width, axis_y_min/height);
-		glVertex2f(axis_x_min/width, axis_y_max/height);
+		glVertex2f(axis_x_min, axis_y_min);
+		glVertex2f(axis_x_max, axis_y_min);
+		glVertex2f(axis_x_min, axis_y_min);
+		glVertex2f(axis_x_min, axis_y_max);
 	glEnd();
 
 	// Display the maximum probability value
@@ -232,7 +232,7 @@ void computeProbability(int numIntervals)
 		{
 			if (data_ptr[i] <= endPoints[j])
 			{
-				prob[j] = prob[j]++;
+				prob[j] += 1;
 				break;
 			}
 		}
@@ -278,15 +278,14 @@ void readFile(string fileName)
 	}
 
 	// Compute the limits for the axes and world
-	axis_x_min = minimum - 100.0;
-	axis_x_max = maximum + 100.0;
-	axis_y_min = 0.0; 
-	axis_y_max = 15.0;
-
-	world_x_min = axis_x_min - 25.0;
-	world_x_max = axis_x_max + 25.0;
-	world_y_min = axis_y_min - 25.0;
-	world_y_max = axis_y_max + 25.0;
+	world_x_min = (float)-(width/2);
+	world_x_man = (float) width/2;
+	world_y_min = (float)-(height/2);
+	world_y_max = (float) height/2;
+	axis_x_min = world_x_min + 40.0;
+	axis_x_max = world_x_max - 40.0;
+	axis_y_min = world_y_min + 30.0; 
+	axis_y_max = world_y_max - 30.0;
 
 	// Compute the histogram
 	computeProbability(numIntervals);
