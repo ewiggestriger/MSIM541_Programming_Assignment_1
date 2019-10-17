@@ -5,7 +5,7 @@
 #include <string>
 #include <cfloat>
 #include <cmath>
-#include <algorithm>
+#include <random>
 #include <gl/glew.h>
 #include <gl/glut.h>
 #include "utility.h"
@@ -33,13 +33,14 @@ float maxProb = -1;
 //Theoretical distributions
 int curveType = 0; // normal distro default
 int numCurvePoints = 100;
-float* curveX = new float[numCurvePoints]();
-float* curveY1 = new float[numCurvePoints](); // for normal function
-float* curveY2 = new float[numCurvePoints](); // for exp function
+float* curveXn = new float[numCurvePoints]();
+float* curveYn = new float[numCurvePoints](); 
+float* curveXx = new float[numCurvePoints]();
+float* curveYx = new float[numCurvePoints]();
 
 //Parameters
-float mu = 0, sigma = 1;  // Normal distribution
-float lambda = 1;	      // Exponential distribution
+float mu = 0.0, sigma = 1.0;  // Normal distribution
+float lambda = 1.0;	      // Exponential distribution
 float parameterStep = 0.05; // Step size for changing parameter values
 
 //Drawing parameters
@@ -48,36 +49,32 @@ float world_x_min, world_x_max, world_y_min, world_y_max;
 float axis_x_min, axis_x_max, axis_y_min, axis_y_max;
 
 //Compute all the points for normal distribution
-//TODO fix normal distribution
 void computeNormalFunc(float mu, float sigma)
 {
-	// This function computes the normal distribution and outputs to arrays
-	// Normal distribution formula is y = (1 / sqrt(2*PI)*sigma)*exp(-(x - (mu)^2)/(2*(sigma)^2))
+	// This function computes the normal distribution and outputs to arrays 
+	float stepSizeN = (7.0) / numCurvePoints;
 	// Determine the step size and compute the arrays curveX and curveY
-	float stepSize = 1;
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveX[i] = -50.0 + stepSize * i;
-		curveY1[i] = (exp(-pow(curveX[i] - mu, 2) / 2 * pow(sigma, 2))) / (sigma * sqrt(2 * PI));
+		curveXn[i] = -3.5 + stepSizeN * i;;
+		curveYn[i] = (1 / (sqrt(2 * PI))) * exp(-((curveXn[i] - mu)*(curveXn[i] - mu) / (2 * sigma)));
 	}
 }
 
 //Compute all the points for exponential distribution
-//TODO fix exponential distribution
 void computeExponentialFunc(float lambda)
 {
-	// Exponential distribution formula is y = (1/lambda)*exp(-x/lambda)
 	// Determine the step size and compute the arrays curveX and curveY
+	float stepSizeX = 7.0 / numCurvePoints;
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveX[i] += (maximum - minimum) / numCurvePoints;
-		curveY2[i] = (1/lambda)*exp(-curveX[i]/lambda);
+		curveXx[i] = 0.0 + stepSizeX * i;
+		curveYx[i] = (lambda)*exp(-(curveXx[i] * lambda));
 	}
 }
 
 void display(void) 
 {
-	//TODO fix text
 	/* clear all pixels */
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -97,25 +94,26 @@ void display(void)
 	glEnd();
 
 	// Display the maximum probability value
-	// Produce string to be displayed
-	stringstream probdens;
-	string prbDnsValue;
-	probdens << "Probability Density" << endl << maximum;
-	probdens.str(prbDnsValue);
 	// place text in proper position relative to graph
+	float maxProb = FLT_MIN; // find max probability density value
+	for (int i = 0; i < numIntervals; i++)
+		if (prob[i] > maxProb)
+			maxProb = prob[i];
 	glRasterPos2f((axis_x_min) + 10, axis_y_max);
-	printString(prbDnsValue);
+	printString("Probability Density");
+	// Produce value string to be displayed
+	stringstream probdens;
+	probdens << maxProb;
+	string probDensValue = probdens.str();
+	glRasterPos2f(axis_x_min + 10, axis_y_max - 15);
+	printString(probDensValue);
 	
 	// Draw probability histogram
 	// set color
 	glColor3f(0.0, 1.0, 0.0); // histogram intervals will be green
 	// create the intervals
-	float intWidth = (axis_x_max - axis_x_min) / numIntervals;
-	float maxProb = FLT_MIN;
-	for (int i = 0; i < numIntervals; i++)
-		if (prob[i] > maxProb)
-			maxProb = prob[i] * 1.2; // scaling factor
-	float intHeight = (axis_y_max/maxProb);
+	float intWidth = (axis_x_max - axis_x_min) / numIntervals; 
+	float intHeight = (axis_y_max/maxProb) * 0.9; // scaling factor
 	for (int i = 1; i < numIntervals + 1; i++)
 	{
 		glBegin(GL_LINE_LOOP);
@@ -130,20 +128,22 @@ void display(void)
 	glLineWidth(3);
 	glColor3f(1.0, 0.0, 0.0); // theoretical distribution will be red
 	glBegin(GL_LINE_STRIP);
-	float curveScaleX = (axis_x_max - axis_x_min) / numCurvePoints;
-	float curveScaleY = (axis_y_max - axis_y_min) / numCurvePoints;
+	float curveScaleXn = 100;
+	float curveScaleYn = 1200;
+	float curveScaleXx = 100;
+	float curveScaleYx = 900;
 	if (curveType == 0) // normal distribution
 	{
 		for (int j = 0; j < numCurvePoints; j++)
 		{
-			glVertex2f(axis_x_min + curveX[j] * (curveScaleX), axis_y_min + curveY1[j] * (curveScaleY));
+			glVertex2f(axis_x_min + (curveXn[j] + 3.5)*curveScaleXn, axis_y_min + curveYn[j]*curveScaleYn);
 		}
 	}
 	else // exponential distribution
 	{
 		for (int j = 0; j < numCurvePoints; j++)
 		{
-			glVertex2f(curveX[j], curveY2[j]);
+			glVertex2f(axis_x_min + curveXx[j] * curveScaleXx, axis_y_min + curveYx[j] * curveScaleYx);
 		}
 	}
 	glEnd();
@@ -152,49 +152,61 @@ void display(void)
 	float topLeftX = axis_x_max * 0.7;
 	float topLeftY = axis_y_max * 0.9;
 
+	// make the histogram-related text green
+	glColor3f(0.0, 1.0, 0.0);
+
 	// File Name UPPER RIGHT
 	glRasterPos2f(topLeftX, topLeftY);
 	printString("File: " + currentFile);
 
 	// Minimum UPPER RIGHT
 	stringstream minval;
-	string minUpperRight;
 	minval << "Min: " << minimum;
-	minval.str(minUpperRight);
+	string minUpperRight = minval.str();
 	glRasterPos2f(topLeftX, topLeftY - 20.0);
 	printString(minUpperRight);
 
 	// Maximum UPPER RIGHT
 	stringstream maxval;
-	string maxUpperRight;
 	maxval << "Max: " << maximum;
-	maxval.str(maxUpperRight);
+	string maxUpperRight = maxval.str();
 	glRasterPos2f(topLeftX, topLeftY - 40.0);
 	printString(maxUpperRight);
 
 	// Number of Intervals UPPER RIGHT
 	stringstream numIntv;
-	string intervalUpperRight;
 	numIntv << "Num. of Intervals: " << numIntervals;
-	numIntv.str(intervalUpperRight);
+	string intervalUpperRight = numIntv.str();
 	glRasterPos2f(topLeftX, topLeftY - 60.0);
 	printString(intervalUpperRight);
 
+	// make the theoretical distribution-related text red
+	glColor3f(1.0, 0.0, 0.0);
+
 	// Draw theoretical distributions
-	stringstream theorD;
-	string whichDistro;
+	stringstream theorD1;
+	stringstream theorD2;
+	string whichDistro1;
+	string whichDistro2;
+
 	if (curveType == 0)
 	{
-		theorD << "Distribution: Normal" << endl << "Mu: " << mu << "Sigma: " << sigma;
-		theorD.str(whichDistro);
+		theorD1 << "Distribution: Normal";
+		whichDistro1 = theorD1.str();
+		theorD2 << "Mu: " << mu << " Sigma: " << sigma;
+		whichDistro2 = theorD2.str();
 	}
 	else
 	{
-		theorD << "Distribution: Exponential" << endl << "Beta: " << lambda;
-		theorD.str(whichDistro);
+		theorD1 << "Distribution: Exponential";
+		whichDistro1 = theorD1.str();
+		theorD2 << "Lambda: " << lambda;
+		whichDistro2 = theorD2.str();
 	}
 	glRasterPos2f(topLeftX, topLeftY - 80.0);
-	printString(whichDistro);
+	printString(whichDistro1);
+	glRasterPos2f(topLeftX, topLeftY - 100.0);
+	printString(whichDistro2);
 
 	glFlush();
 	glutSwapBuffers();
@@ -224,9 +236,6 @@ void computeProbability(int numIntervals)
 	{
 		endPoints[i] = minimum + ((range / numIntervals) * i);
 	}
-
-	// Re-initialize the maximum probability after the number of intervals has been changed
-	// TODO not sure what this is
 
 	// Compute the probability for each interval (update the array prob)
 	for (int i = 0; i < numIntervals; i++)
@@ -293,6 +302,9 @@ void readFile(string fileName)
 	axis_y_min = world_y_min + 30.0; 
 	axis_y_max = world_y_max - 30.0;
 
+	// set current file name
+	currentFile = fileName;
+
 	// Compute the histogram
 	computeProbability(numIntervals);
 
@@ -326,30 +338,47 @@ void specialKey(int key, int x, int y) // for the arrow keys
 	if (key == GLUT_KEY_LEFT) // decrease mu
 	{
 		mu -= parameterStep;
+		computeNormalFunc(mu, sigma);
+		computeExponentialFunc(lambda);
+		glutPostRedisplay();
 	}
 	if (key == GLUT_KEY_RIGHT) // increase mu
 	{
 		mu += parameterStep;
+		computeNormalFunc(mu, sigma);
+		computeExponentialFunc(lambda);
+		glutPostRedisplay();
 	}
 	if (key == GLUT_KEY_UP) // increase sigma or lambda
 	{
 		if (curveType == 0)
 		{
 			sigma += parameterStep;
+			computeNormalFunc(mu, sigma);
+			computeExponentialFunc(lambda);
+			glutPostRedisplay();
 		}
 		else
 			lambda +=parameterStep;
+			computeNormalFunc(mu, sigma);
+			computeExponentialFunc(lambda);
+			glutPostRedisplay();
 	}
 	if (key == GLUT_KEY_DOWN) // decrease sigma or lambda
 	{
 		if (curveType == 0)
 		{
 			sigma -= parameterStep;
+			computeNormalFunc(mu, sigma);
+			computeExponentialFunc(lambda);
+			glutPostRedisplay();
 		}
 		else
 			lambda -= parameterStep;
+			computeNormalFunc(mu, sigma);
+			computeExponentialFunc(lambda);
+			glutPostRedisplay();
 	}
-	glutPostRedisplay();
 }
 
 void topMenuFunc(int id) 
