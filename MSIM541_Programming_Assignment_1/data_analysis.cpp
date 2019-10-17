@@ -5,6 +5,7 @@
 #include <string>
 #include <cfloat>
 #include <cmath>
+#include <algorithm>
 #include <gl/glew.h>
 #include <gl/glut.h>
 #include "utility.h"
@@ -32,9 +33,9 @@ float maxProb = -1;
 //Theoretical distributions
 int curveType = 0; // normal distro default
 int numCurvePoints = 100;
-float* curveX = new float[numCurvePoints];
-float* curveY1 = new float[numCurvePoints]; // for normal function
-float* curveY2 = new float[numCurvePoints]; // for exp function
+float* curveX = new float[numCurvePoints]();
+float* curveY1 = new float[numCurvePoints](); // for normal function
+float* curveY2 = new float[numCurvePoints](); // for exp function
 
 //Parameters
 float mu = 0, sigma = 1;  // Normal distribution
@@ -47,19 +48,22 @@ float world_x_min, world_x_max, world_y_min, world_y_max;
 float axis_x_min, axis_x_max, axis_y_min, axis_y_max;
 
 //Compute all the points for normal distribution
+//TODO fix normal distribution
 void computeNormalFunc(float mu, float sigma)
 {
 	// This function computes the normal distribution and outputs to arrays
 	// Normal distribution formula is y = (1 / sqrt(2*PI)*sigma)*exp(-(x - (mu)^2)/(2*(sigma)^2))
 	// Determine the step size and compute the arrays curveX and curveY
+	float stepSize = 1;
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveX[i] += (maximum - minimum) / numCurvePoints;
-		curveY1[i] = (1 / sqrt(2 * PI)*sigma)*exp(-0.5*pow(((curveX[i] - mu) / sigma), 2));
+		curveX[i] = -50.0 + stepSize * i;
+		curveY1[i] = (exp(-pow(curveX[i] - mu, 2) / 2 * pow(sigma, 2))) / (sigma * sqrt(2 * PI));
 	}
 }
 
 //Compute all the points for exponential distribution
+//TODO fix exponential distribution
 void computeExponentialFunc(float lambda)
 {
 	// Exponential distribution formula is y = (1/lambda)*exp(-x/lambda)
@@ -73,6 +77,7 @@ void computeExponentialFunc(float lambda)
 
 void display(void) 
 {
+	//TODO fix text
 	/* clear all pixels */
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -98,20 +103,26 @@ void display(void)
 	probdens << "Probability Density" << endl << maximum;
 	probdens.str(prbDnsValue);
 	// place text in proper position relative to graph
-	glRasterPos2f((axis_x_min / width) + 10, axis_y_max / height);
+	glRasterPos2f((axis_x_min) + 10, axis_y_max);
 	printString(prbDnsValue);
 	
 	// Draw probability histogram
 	// set color
 	glColor3f(0.0, 1.0, 0.0); // histogram intervals will be green
-	// create the intervals, order LR-UR-UL-LL
+	// create the intervals
+	float intWidth = (axis_x_max - axis_x_min) / numIntervals;
+	float maxProb = FLT_MIN;
 	for (int i = 0; i < numIntervals; i++)
+		if (prob[i] > maxProb)
+			maxProb = prob[i] * 1.2; // scaling factor
+	float intHeight = (axis_y_max/maxProb);
+	for (int i = 1; i < numIntervals + 1; i++)
 	{
 		glBegin(GL_LINE_LOOP);
-			glVertex2f(endPoints[i], axis_y_min);
-			glVertex2f(endPoints[i], prob[i]);
-			glVertex2f(endPoints[i] - width, prob[i]);
-			glVertex2f(endPoints[i] - width, axis_y_min);
+			glVertex2f(axis_x_min + (intWidth * i), axis_y_min);
+			glVertex2f(axis_x_min + (intWidth * i), axis_y_min + (prob[i]*intHeight));
+			glVertex2f(axis_x_min + (intWidth * i) - intWidth, axis_y_min + (prob[i] * intHeight));
+			glVertex2f(axis_x_min + (intWidth * i) - intWidth, axis_y_min);
 		glEnd();
 	}
 
@@ -119,11 +130,13 @@ void display(void)
 	glLineWidth(3);
 	glColor3f(1.0, 0.0, 0.0); // theoretical distribution will be red
 	glBegin(GL_LINE_STRIP);
+	float curveScaleX = (axis_x_max - axis_x_min) / numCurvePoints;
+	float curveScaleY = (axis_y_max - axis_y_min) / numCurvePoints;
 	if (curveType == 0) // normal distribution
 	{
 		for (int j = 0; j < numCurvePoints; j++)
 		{
-			glVertex2f(curveX[j], curveY1[j]);
+			glVertex2f(axis_x_min + curveX[j] * (curveScaleX), axis_y_min + curveY1[j] * (curveScaleY));
 		}
 	}
 	else // exponential distribution
@@ -202,32 +215,33 @@ void computeProbability(int numIntervals)
 	}
 
 	// establish arrays for endpoints and probabilities 
-	float* endPoints = new float[numIntervals];
-	float* prob = new float[numIntervals];
+	endPoints = new float[numIntervals];
+	prob = new float[numIntervals];
 
 	// Determine the end points for each interval (update the array endPoints)
 	float range = maximum - minimum;
-	//int numberOfEndpoints = range / numIntervals;
-	float intWidth = range / numIntervals;
 	for (int i = 0; i < numIntervals; i++)
 	{
-		endPoints[i] = minimum + (intWidth * i);
+		endPoints[i] = minimum + ((range / numIntervals) * i);
 	}
+
 	// Re-initialize the maximum probability after the number of intervals has been changed
 	// TODO not sure what this is
 
 	// Compute the probability for each interval (update the array prob)
-	// loop thru endPoints array until value is less than endPoints val
-	for (int i = 0; i < sizeof(data_ptr); i++)
+	for (int i = 0; i < numIntervals; i++)
 	{
-		for (int j = 0; i < sizeof(endPoints); j++)
+		int counter = 0;
+		for (int j = 0; j < numDataPoints; j++)
 		{
-			if (data_ptr[i] <= endPoints[j])
+			if (data_ptr[j] <= endPoints[i] && data_ptr[j] > endPoints[i-1])
 			{
-				prob[j] += 1;
-				break;
+				counter += 1;
+				//cout << "check, " << counter << endl;
 			}
 		}
+		float pdf = (float)counter / numDataPoints;
+		prob[i] = pdf;
 	}
 
 }
@@ -270,10 +284,10 @@ void readFile(string fileName)
 	}
 
 	// Compute the limits for the axes and world
-	world_x_min = (float)-(width/2);
-	world_x_man = (float) width/2;
-	world_y_min = (float)-(height/2);
-	world_y_max = (float) height/2;
+	world_x_min = 0;
+	world_x_max = (float) width;
+	world_y_min = 0;
+	world_y_max = (float) height;
 	axis_x_min = world_x_min + 40.0;
 	axis_x_max = world_x_max - 40.0;
 	axis_y_min = world_y_min + 30.0; 
@@ -294,8 +308,7 @@ void readFile(string fileName)
 void init(void)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	gluOrtho2D(-100.0, 100.0, -100.0, 100.0);
+	glColor3f(1.0, 1.0, 1.0); // draw in white
 	readFile("Normal.dat"); // initialize with the normal distribution file
 }
 
