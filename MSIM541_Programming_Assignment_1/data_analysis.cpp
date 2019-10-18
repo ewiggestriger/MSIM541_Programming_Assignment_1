@@ -5,7 +5,6 @@
 #include <string>
 #include <cfloat>
 #include <cmath>
-#include <random>
 #include <gl/glew.h>
 #include <gl/glut.h>
 #include "utility.h"
@@ -31,12 +30,13 @@ float* prob;
 float maxProb = -1;
 
 //Theoretical distributions
-int curveType = 0; // normal distro default
+int curveType = 0; // normal distro default, 1 == exponential 
 int numCurvePoints = 100;
-float* curveXn = new float[numCurvePoints]();
+float* curveXn = new float[numCurvePoints](); // for normal distribution
 float* curveYn = new float[numCurvePoints](); 
-float* curveXx = new float[numCurvePoints]();
+float* curveXx = new float[numCurvePoints](); // for exponential distribution
 float* curveYx = new float[numCurvePoints]();
+bool isNormal; // result of normality test
 
 //Parameters
 float mu = 0.0, sigma = 1.0;  // Normal distribution
@@ -52,11 +52,11 @@ float axis_x_min, axis_x_max, axis_y_min, axis_y_max;
 void computeNormalFunc(float mu, float sigma)
 {
 	// This function computes the normal distribution and outputs to arrays 
-	float stepSizeN = (7.0) / numCurvePoints;
 	// Determine the step size and compute the arrays curveX and curveY
+	float stepSizeN = (7.0) / numCurvePoints; // 7.0 yields curve that extends from -3.5 to 3.5, good match for normal, mu=0, sigma=1
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveXn[i] = -3.5 + stepSizeN * i;;
+		curveXn[i] = -3.5 + stepSizeN * i; 
 		curveYn[i] = (1 / (sqrt(2 * PI))) * exp(-((curveXn[i] - mu)*(curveXn[i] - mu) / (2 * sigma)));
 	}
 }
@@ -65,12 +65,52 @@ void computeNormalFunc(float mu, float sigma)
 void computeExponentialFunc(float lambda)
 {
 	// Determine the step size and compute the arrays curveX and curveY
-	float stepSizeX = 7.0 / numCurvePoints;
+	float stepSizeX = 7.0 / numCurvePoints; // again, 7.0 a good fit once projected onto the histogram
 	for (int i = 0; i < numCurvePoints; i++)
 	{
 		curveXx[i] = 0.0 + stepSizeX * i;
-		curveYx[i] = (lambda)*exp(-(curveXx[i] * lambda));
+		curveYx[i] = (lambda)*exp(-(curveXx[i] * lambda)); // note using the lambda formula, not 1/beta as given in the assignment notes
 	}
+}
+
+void testForDistro(float mu, float sigma, float lambda)
+{
+	/*this function automatically determines which theoretical distribution is the best
+	fit for the input data. It uses a Jarque-Bera test for normality. Since there are only 
+	normal and exponential distributions in this assignment, any curve failing this test 
+	is assumed to be exponential fit.*/
+	// compute descriptive statistics for data file
+	float datafileSum = 0.0;
+	for (int i = 0; i < numDataPoints; i++)
+	{
+		datafileSum = datafileSum + data_ptr[i];
+	}
+	float fileMean = datafileSum / (float)numDataPoints;
+	// initialize values to be computed later
+	float fileVar = 0.0;
+	float fileStdDev = 0.0;
+	float fileSkewness = 0.0;
+	float fileKurtosis = 0.0;
+
+	for (int j = 0; j < numDataPoints; j++)
+	{
+		fileVar += pow((data_ptr[j] - fileMean), 2);
+		fileSkewness += pow((data_ptr[j] - fileMean), 3);
+		fileKurtosis += pow((data_ptr[j] - fileMean), 4);
+	}
+	fileVar = fileVar / numDataPoints;
+	fileSkewness = (fileSkewness / numDataPoints) / pow(fileVar, 1.5);
+	fileKurtosis = (fileKurtosis / numDataPoints) / pow(fileVar, 2);
+
+	// apply tests
+	// Jarque-Bera test
+	float JB = (numDataPoints / 6) * (pow(fileSkewness, 2) + 0.25 * pow((fileKurtosis - 3.0), 2));
+	if (JB < 3.0) // less than 3.0 fits standard normal distribution
+	{
+		isNormal = true;
+	}
+	else
+		isNormal = false;
 }
 
 void display(void) 
@@ -112,8 +152,8 @@ void display(void)
 	// set color
 	glColor3f(0.0, 1.0, 0.0); // histogram intervals will be green
 	// create the intervals
-	float intWidth = (axis_x_max - axis_x_min) / numIntervals; 
-	float intHeight = (axis_y_max/maxProb) * 0.9; // scaling factor
+	float intWidth = (axis_x_max - axis_x_min) / numIntervals; // width of interval
+	float intHeight = (axis_y_max/maxProb) * 0.9; // height of interval multiplied by scaling factor
 	for (int i = 1; i < numIntervals + 1; i++)
 	{
 		glBegin(GL_LINE_LOOP);
@@ -128,9 +168,11 @@ void display(void)
 	glLineWidth(3);
 	glColor3f(1.0, 0.0, 0.0); // theoretical distribution will be red
 	glBegin(GL_LINE_STRIP);
-	float curveScaleXn = 100;
-	float curveScaleYn = 1200;
-	float curveScaleXx = 100;
+	/* these scaling factors project the actual distributions onto the world coordinates so that 
+	they best match in size the histogram*/
+	float curveScaleXn = 100; // normal distribution scale
+	float curveScaleYn = 1300;
+	float curveScaleXx = 100; // exponential distribution scale
 	float curveScaleYx = 900;
 	if (curveType == 0) // normal distribution
 	{
@@ -208,6 +250,16 @@ void display(void)
 	glRasterPos2f(topLeftX, topLeftY - 100.0);
 	printString(whichDistro2);
 
+	// Print results of normality test
+	glColor3f(0.0, 0.5, 0.5); // cyan text for normality test
+	glRasterPos2f(topLeftX, topLeftY - 120.0);
+	if (isNormal == true)
+	{
+		printString("The distribution is normal");
+	}
+	else
+		printString("The distribution is not normal");
+
 	glFlush();
 	glutSwapBuffers();
 }
@@ -246,7 +298,6 @@ void computeProbability(int numIntervals)
 			if (data_ptr[j] <= endPoints[i] && data_ptr[j] > endPoints[i-1])
 			{
 				counter += 1;
-				//cout << "check, " << counter << endl;
 			}
 		}
 		float pdf = (float)counter / numDataPoints;
@@ -312,9 +363,10 @@ void readFile(string fileName)
 	float mu = 0, sigma = 1;  // Normal distribution
 	float lambda = 1;	      // Exponential distribution
 
-	// Compute the theoretical distribution
+	// Compute the theoretical distribution and test for normality
 	computeNormalFunc(mu, sigma);
 	computeExponentialFunc(lambda);
+	testForDistro(mu, sigma, lambda);
 }
 
 void init(void)
@@ -335,48 +387,54 @@ void keyboard(unsigned char key, int x, int y)
 void specialKey(int key, int x, int y) // for the arrow keys
 {
 	//Update the parameters and theoretical distributions
-	if (key == GLUT_KEY_LEFT) // decrease mu
+	if (key == GLUT_KEY_LEFT) // decrease mu and recompute
 	{
 		mu -= parameterStep;
 		computeNormalFunc(mu, sigma);
 		computeExponentialFunc(lambda);
+		testForDistro(mu, sigma, lambda);
 		glutPostRedisplay();
 	}
-	if (key == GLUT_KEY_RIGHT) // increase mu
+	if (key == GLUT_KEY_RIGHT) // increase mu and recompute
 	{
 		mu += parameterStep;
 		computeNormalFunc(mu, sigma);
 		computeExponentialFunc(lambda);
+		testForDistro(mu, sigma, lambda);
 		glutPostRedisplay();
 	}
-	if (key == GLUT_KEY_UP) // increase sigma or lambda
+	if (key == GLUT_KEY_UP) // increase sigma or lambda and recompute
 	{
 		if (curveType == 0)
 		{
 			sigma += parameterStep;
 			computeNormalFunc(mu, sigma);
 			computeExponentialFunc(lambda);
+			testForDistro(mu, sigma, lambda);
 			glutPostRedisplay();
 		}
 		else
 			lambda +=parameterStep;
 			computeNormalFunc(mu, sigma);
 			computeExponentialFunc(lambda);
+			testForDistro(mu, sigma, lambda);
 			glutPostRedisplay();
 	}
-	if (key == GLUT_KEY_DOWN) // decrease sigma or lambda
+	if (key == GLUT_KEY_DOWN) // decrease sigma or lambda and recompute
 	{
 		if (curveType == 0)
 		{
 			sigma -= parameterStep;
 			computeNormalFunc(mu, sigma);
 			computeExponentialFunc(lambda);
+			testForDistro(mu, sigma, lambda);
 			glutPostRedisplay();
 		}
 		else
 			lambda -= parameterStep;
 			computeNormalFunc(mu, sigma);
 			computeExponentialFunc(lambda);
+			testForDistro(mu, sigma, lambda);
 			glutPostRedisplay();
 	}
 }
@@ -409,9 +467,9 @@ void distributionMenuFunction(int id)
 	//choose which theoretical distribution to use
 	switch (id)
 	{
-	case 1: curveType = 0;
+	case 1: curveType = 0; // normal
 		break;
-	case 2: curveType = 1;
+	case 2: curveType = 1; // exponential
 		break;
 	}
 	// redraw the theoretical distribution curve
