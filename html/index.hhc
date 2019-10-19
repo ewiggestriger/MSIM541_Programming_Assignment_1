@@ -28,7 +28,7 @@
         <LI><OBJECT type="text/sitemap"><param name="Name" value="readFile"><param name="Local" value="data__analysis_8cpp.html#a1d2c4747132d1e5f8a236046d2a3442f"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="reshape"><param name="Local" value="data__analysis_8cpp.html#acc1ffe65e6869931318610cae7210078"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="specialKey"><param name="Local" value="data__analysis_8cpp.html#a98ec2c327bb359692043e43a6805f486"><param name="ImageNumber" value="11"></OBJECT>
-        <LI><OBJECT type="text/sitemap"><param name="Name" value="testForDistro"><param name="Local" value="data__analysis_8cpp.html#abe974b6ebeafd39cc635f9af5b20fdc4"><param name="ImageNumber" value="11"></OBJECT>
+        <LI><OBJECT type="text/sitemap"><param name="Name" value="testForDistro"><param name="Local" value="data__analysis_8cpp.html#adcefcaa584c1eff30b4e85dc981cbe27"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="topMenuFunc"><param name="Local" value="data__analysis_8cpp.html#a7a3bcf29c9207c9e1d8b5c5038528334"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="axis_x_max"><param name="Local" value="data__analysis_8cpp.html#aa8507650e5b0fe8283f3eb183a4e34ae"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="axis_x_min"><param name="Local" value="data__analysis_8cpp.html#a0038246c6d0800579870ad21d2cb5de8"><param name="ImageNumber" value="11"></OBJECT>
@@ -44,12 +44,14 @@
         <LI><OBJECT type="text/sitemap"><param name="Name" value="endPoints"><param name="Local" value="data__analysis_8cpp.html#a5829d8d7b5d5c2cc30d3b7971bcdfafb"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="fileName1"><param name="Local" value="data__analysis_8cpp.html#a1919d37919306ece48344c9b78f2f49c"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="fileName2"><param name="Local" value="data__analysis_8cpp.html#a5907c9b35ea0c7552349afe8ffca918f"><param name="ImageNumber" value="11"></OBJECT>
+        <LI><OBJECT type="text/sitemap"><param name="Name" value="generator"><param name="Local" value="data__analysis_8cpp.html#af59783448e75cddb0d724fe38601c083"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="height"><param name="Local" value="data__analysis_8cpp.html#ad12fc34ce789bce6c8a05d8a17138534"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="isNormal"><param name="Local" value="data__analysis_8cpp.html#aac7be14df8efb030042d0a419f0d07f0"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="lambda"><param name="Local" value="data__analysis_8cpp.html#acac4a565486bad0b88b62387d8a5d891"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="maximum"><param name="Local" value="data__analysis_8cpp.html#a466d4dab1bd38a43438c2e5e6ad5534e"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="maxProb"><param name="Local" value="data__analysis_8cpp.html#a4009ccffbcbaa71f27a100996637ef55"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="minimum"><param name="Local" value="data__analysis_8cpp.html#a1fac701369b1197497f7c698ad74386d"><param name="ImageNumber" value="11"></OBJECT>
+        <LI><OBJECT type="text/sitemap"><param name="Name" value="minProb"><param name="Local" value="data__analysis_8cpp.html#af12a7dba0e528259c181ee79e80ad106"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="mu"><param name="Local" value="data__analysis_8cpp.html#a4df8d1d064e0269c44c34fd4a7a3b705"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="numCurvePoints"><param name="Local" value="data__analysis_8cpp.html#a0f3f27cb8d5144d445ed195ee6dd4f50"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="numDataPoints"><param name="Local" value="data__analysis_8cpp.html#a4b619ee914b6d9d8490509e1db377731"><param name="ImageNumber" value="11"></OBJECT>
@@ -57,6 +59,7 @@
         <LI><OBJECT type="text/sitemap"><param name="Name" value="parameterStep"><param name="Local" value="data__analysis_8cpp.html#a58473e61d489ab3f35a0b6f2499f5672"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="PI"><param name="Local" value="data__analysis_8cpp.html#a5f16bd6445334b527ea2ac2b4d035723"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="prob"><param name="Local" value="data__analysis_8cpp.html#a6a90ae33df734ef69a88ff3e98e51ba8"><param name="ImageNumber" value="11"></OBJECT>
+        <LI><OBJECT type="text/sitemap"><param name="Name" value="randomPoints"><param name="Local" value="data__analysis_8cpp.html#a8c483df078bca8d56bb115d919fad0b3"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="sigma"><param name="Local" value="data__analysis_8cpp.html#ae11aeeb83e22b5b7f1e6b4347eb1daa6"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="width"><param name="Local" value="data__analysis_8cpp.html#a2474a5474cbff19523a51eb1de01cda4"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="world_x_max"><param name="Local" value="data__analysis_8cpp.html#a7510815f15b91f88cbb0a144aba5b211"><param name="ImageNumber" value="11"></OBJECT>

@@ -17,6 +17,9 @@
 #include <string>
 #include <cfloat>
 #include <cmath>
+#include <random>
+#include <vector>
+#include <algorithm>
 #include <gl/glew.h>
 #include <gl/glut.h>
 #include "utility.h"
@@ -35,16 +38,19 @@ string currentFile;
 float* data_ptr;
 int numDataPoints;
 float minimum, maximum;
+float maxProb;
+float minProb;
 
 /// Histogram 
 int numIntervals = 30;
 float* endPoints;
 float* prob;
-float maxProb = -1;
 
 /// Theoretical distributions
 int curveType = 0; /// normal distro default, 1 == exponential 
 int numCurvePoints = 100;
+default_random_engine generator; /// the random generator creates the curve points
+vector<float> randomPoints; /// to hold theoretical curve values for sorting prior to assigning to arrays
 float* curveXn = new float[numCurvePoints](); /// for normal distribution
 float* curveYn = new float[numCurvePoints](); 
 float* curveXx = new float[numCurvePoints](); /// for exponential distribution
@@ -52,7 +58,7 @@ float* curveYx = new float[numCurvePoints]();
 bool isNormal; /// result of normality test
 
 /// Parameters for theoretical distributions
-float mu = 0.0, sigma = 1.0;  /// Normal distribution
+float mu = 0, sigma = 1;  /// Normal distribution
 float lambda = 1.0;	      /// Exponential distribution
 float parameterStep = 0.05; /// Step size for changing parameter values
 
@@ -62,30 +68,48 @@ float world_x_min, world_x_max, world_y_min, world_y_max;
 float axis_x_min, axis_x_max, axis_y_min, axis_y_max;
 
 /// This function computes all the x and y coordinate points for the theoretical normal 
-/// distribution curve.
+/// distribution curve. The function uses a random number generator for the normal distribution 
+/// with the given parameters to create a set of points to plot the curve with. The points
+/// are initially stored in a vector so that they may be sorted before being loaded into
+/// the curve points array.
 /// \param mu Mu is the mean of the distribution
 /// \param sigma Sigma is the standard deviation of the distribution
 void computeNormalFunc(float mu, float sigma)
 {
-	float stepSizeN = (7.0) / numCurvePoints; /// 7.0 yields curve that extends from -3.5 to 3.5, good match for standard normal
+	normal_distribution<float> normDist(mu, sigma);
+	for (int d = 0; d < numCurvePoints; d++)
+	{
+		randomPoints.push_back(normDist(generator));
+	}
+	sort(randomPoints.begin(), randomPoints.end());
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveXn[i] = -3.5 + stepSizeN * i; 
+		curveXn[i] = randomPoints[i]; 
 		curveYn[i] = (1 / (sqrt(2 * PI))) * exp(-((curveXn[i] - mu)*(curveXn[i] - mu) / (2 * sigma)));
 	}
+	randomPoints.clear(); /// re-initialize vector now that values no longer needed this iteration
 }
 
 /// This function computes all the x and y coordinate points for the theoretical 
-/// exponential distribution curve.
+/// exponential distribution curve. The function uses a random number generator for the exponential distribution 
+/// with the given parameters to create a set of points to plot the curve with. The points
+/// are initially stored in a vector so that they may be sorted before being loaded into
+/// the curve points array.
 /// \param lambda Lambda is the rate parameter for this distribution, equal to the inverse of the mean
 void computeExponentialFunc(float lambda)
 {
-	float stepSizeX = 7.0 / numCurvePoints; /// 7.0 a good fit once projected onto the histogram
+	exponential_distribution<float> expDist(lambda);
+	for (int d = 0; d < numCurvePoints; d++)
+	{
+		randomPoints.push_back(expDist(generator));
+	}
+	sort(randomPoints.begin(), randomPoints.end());
 	for (int i = 0; i < numCurvePoints; i++)
 	{
-		curveXx[i] = 0.0 + stepSizeX * i;
+		curveXx[i] = randomPoints[i];
 		curveYx[i] = (lambda)*exp(-(curveXx[i] * lambda)); /// note using lambda formula, not 1/beta as given in the assignment notes
 	}
+	randomPoints.clear(); /// re-initialize vector now that values no longer needed this iteration
 }
 
 void testForDistro()
@@ -114,6 +138,7 @@ void testForDistro()
 		fileKurtosis += pow((data_ptr[j] - fileMean), 4);
 	}
 	fileVar = fileVar / numDataPoints;
+	fileStdDev = sqrt(fileVar);
 	fileSkewness = (fileSkewness / numDataPoints) / pow(fileVar, 1.5);
 	fileKurtosis = (fileKurtosis / numDataPoints) / pow(fileVar, 2);
 
@@ -136,6 +161,11 @@ void display(void)
 	/// clear all pixels 
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	/// convert world to screen coordinates
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(world_x_min, world_x_max, world_y_min, world_y_max);
+
 	///Reset modelview matrix
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -153,32 +183,31 @@ void display(void)
 
 	/// Display the maximum probability value
 	/// place text in proper position relative to graph
-	float maxProb = FLT_MIN; /// find max probability density value
-	for (int i = 0; i < numIntervals; i++)
-		if (prob[i] > maxProb)
-			maxProb = prob[i];
-	glRasterPos2f((axis_x_min) + 10, axis_y_max);
+	glRasterPos2f((axis_x_min) + ((maximum - minimum) * 0.015), axis_y_max + ((maxProb - minProb) * 0.025));
 	printString("Probability Density");
 	/// Produce value string to be displayed
 	stringstream probdens;
 	probdens << maxProb;
 	string probDensValue = probdens.str();
-	glRasterPos2f(axis_x_min + 10, axis_y_max - 15);
+	glRasterPos2f(axis_x_min + ((maximum - minimum) * 0.015), maxProb);
 	printString(probDensValue);
+	/// Display x-axis label
+	glRasterPos2f(axis_x_max - ((maximum - minimum) * 0.03), axis_y_min + ((maxProb - minProb) * 0.025));
+	printString("Data");
 	
 	/// Draw probability histogram
 	/// set color
 	glColor3f(0.0, 1.0, 0.0); /// histogram intervals will be green
 	/// create the intervals
-	float intWidth = (axis_x_max - axis_x_min) / numIntervals; /// width of interval
-	float intHeight = (axis_y_max/maxProb) * 0.9; /// height of interval multiplied by scaling factor
-	for (int i = 1; i < numIntervals + 1; i++)
+	float intWidth = (maximum - minimum) / numIntervals; /// width of interval
+	float intHeight = (axis_y_max/maxProb); /// height of interval 
+	for (int i = 0; i < numIntervals; i++)
 	{
 		glBegin(GL_LINE_LOOP);
-			glVertex2f(axis_x_min + (intWidth * i), axis_y_min);
-			glVertex2f(axis_x_min + (intWidth * i), axis_y_min + (prob[i]*intHeight));
-			glVertex2f(axis_x_min + (intWidth * i) - intWidth, axis_y_min + (prob[i] * intHeight));
-			glVertex2f(axis_x_min + (intWidth * i) - intWidth, axis_y_min);
+			glVertex2f(endPoints[i], axis_y_min);
+			glVertex2f(endPoints[i], (prob[i]));
+			glVertex2f(endPoints[i] - intWidth, (prob[i]));
+			glVertex2f(endPoints[i] - intWidth, axis_y_min);
 		glEnd();
 	}
 
@@ -186,31 +215,25 @@ void display(void)
 	glLineWidth(3);
 	glColor3f(1.0, 0.0, 0.0); /// theoretical distribution will be red
 	glBegin(GL_LINE_STRIP);
-	/// these scaling factors project the actual distributions onto the world coordinates so that 
-	/// they best match in size the histogram
-	float curveScaleXn = 100; /// normal distribution scale
-	float curveScaleYn = 1300;
-	float curveScaleXx = 100; /// exponential distribution scale
-	float curveScaleYx = 900;
 	if (curveType == 0) /// normal distribution
 	{
 		for (int j = 0; j < numCurvePoints; j++)
 		{
-			glVertex2f(axis_x_min + (curveXn[j] + 3.5)*curveScaleXn, axis_y_min + curveYn[j]*curveScaleYn);
+			glVertex2f((curveXn[j]), curveYn[j]);
 		}
 	}
 	else /// exponential distribution
 	{
 		for (int j = 0; j < numCurvePoints; j++)
 		{
-			glVertex2f(axis_x_min + curveXx[j] * curveScaleXx, axis_y_min + curveYx[j] * curveScaleYx);
+			glVertex2f(curveXx[j], curveYx[j]);
 		}
 	}
 	glEnd();
 
 	/// Compute the top-left position of the annotation
-	float topLeftX = axis_x_max * 0.7;
-	float topLeftY = axis_y_max * 0.9;
+	float topLeftX = axis_x_max - ((maximum - minimum) * 0.33);
+	float topLeftY = axis_y_max - ((maxProb - minProb) * 0.1);
 
 	/// make the histogram-related text green
 	glColor3f(0.0, 1.0, 0.0);
@@ -223,21 +246,21 @@ void display(void)
 	stringstream minval;
 	minval << "Min: " << minimum;
 	string minUpperRight = minval.str();
-	glRasterPos2f(topLeftX, topLeftY - 20.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.95);
 	printString(minUpperRight);
 
 	/// Maximum UPPER RIGHT
 	stringstream maxval;
 	maxval << "Max: " << maximum;
 	string maxUpperRight = maxval.str();
-	glRasterPos2f(topLeftX, topLeftY - 40.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.9);
 	printString(maxUpperRight);
 
 	/// Number of Intervals UPPER RIGHT
 	stringstream numIntv;
 	numIntv << "Num. of Intervals: " << numIntervals;
 	string intervalUpperRight = numIntv.str();
-	glRasterPos2f(topLeftX, topLeftY - 60.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.85);
 	printString(intervalUpperRight);
 
 	/// make the theoretical distribution-related text red
@@ -263,14 +286,14 @@ void display(void)
 		theorD2 << "Lambda: " << lambda;
 		whichDistro2 = theorD2.str();
 	}
-	glRasterPos2f(topLeftX, topLeftY - 80.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.8);
 	printString(whichDistro1);
-	glRasterPos2f(topLeftX, topLeftY - 100.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.75);
 	printString(whichDistro2);
 
 	/// Print results of normality test
 	glColor3f(0.0, 0.5, 0.5); /// cyan text for normality test
-	glRasterPos2f(topLeftX, topLeftY - 120.0);
+	glRasterPos2f(topLeftX, topLeftY * 0.7);
 	if (isNormal == true)
 	{
 		printString("The distribution is normal");
@@ -309,10 +332,10 @@ void computeProbability(int numIntervals)
 	float range = maximum - minimum;
 	for (int i = 0; i < numIntervals; i++)
 	{
-		endPoints[i] = minimum + ((range / numIntervals) * i);
+		endPoints[i] = minimum + ((range / numIntervals) * (i + 1));
 	}
 
-	/// Compute the probability for each interval (update the array prob)
+	/// Compute the density value for each interval (update the array prob)
 	for (int i = 0; i < numIntervals; i++)
 	{
 		int counter = 0;
@@ -323,13 +346,12 @@ void computeProbability(int numIntervals)
 				counter += 1;
 			}
 		}
-		float pdf = (float)counter / numDataPoints;
-		prob[i] = pdf;
+		float dv = ((float)counter / numDataPoints) / ((maximum - minimum) / numIntervals); 
+		prob[i] = dv;
 	}
-
 }
 
-// TODO revisit world dimensions calculations. Should they be based on the dimensions of the data?
+// TODO figure out how to theoretical curves without scaling the y coordinate
 void readFile(string fileName) 
 {
 	/// This function reads in the contents of the data file desired and 
@@ -373,16 +395,6 @@ void readFile(string fileName)
 		}
 	}
 
-	/// Compute the limits for the axes and world
-	world_x_min = 0;
-	world_x_max = (float) width;
-	world_y_min = 0;
-	world_y_max = (float) height;
-	axis_x_min = world_x_min + 40.0;
-	axis_x_max = world_x_max - 40.0;
-	axis_y_min = world_y_min + 30.0; 
-	axis_y_max = world_y_max - 30.0;
-
 	/// set current file name
 	currentFile = fileName;
 
@@ -397,6 +409,28 @@ void readFile(string fileName)
 	computeNormalFunc(mu, sigma);
 	computeExponentialFunc(lambda);
 	testForDistro();
+
+	/// find Y max and min
+	maxProb = -FLT_MAX;
+	minProb = FLT_MAX;
+
+	for (int j = 0; j < numIntervals; j++)
+	{
+		if (prob[j] > maxProb)
+			maxProb = prob[j];
+		if (prob[j] < minProb)
+			minProb = prob[j];
+	}
+
+	/// Compute the limits for the axes and world
+	axis_x_min = minimum;
+	axis_x_max = maximum;
+	axis_y_min = minProb;
+	axis_y_max = maxProb + 0.05;
+	world_x_min = axis_x_min - ((maximum - minimum) * 0.1);
+	world_x_max = axis_x_max + ((maximum - minimum) * 0.1);
+	world_y_min = axis_y_min - ((maxProb - minProb) * 0.1);
+	world_y_max = axis_y_max + ((maxProb - minProb) * 0.1);
 }
 
 void init(void)

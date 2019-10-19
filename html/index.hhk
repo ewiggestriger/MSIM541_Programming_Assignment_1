@@ -41,6 +41,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#afff305262d54ff700b916f1d64fb77e3"><param name="Name" value="fileMenuFunction"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1919d37919306ece48344c9b78f2f49c"><param name="Name" value="fileName1"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a5907c9b35ea0c7552349afe8ffca918f"><param name="Name" value="fileName2"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#af59783448e75cddb0d724fe38601c083"><param name="Name" value="generator"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#ad12fc34ce789bce6c8a05d8a17138534"><param name="Name" value="height"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#afc0f28ef3902281e286021b87b6c526e"><param name="Name" value="histogramMenuFunction"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a2858154e2009b0e6e616f313177762bc"><param name="Name" value="init"></OBJECT>
@@ -52,6 +53,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4009ccffbcbaa71f27a100996637ef55"><param name="Name" value="maxProb"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a19add5f2c5e6fb0557394132cdb24b6c"><param name="Name" value="MenuPicker"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1fac701369b1197497f7c698ad74386d"><param name="Name" value="minimum"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#af12a7dba0e528259c181ee79e80ad106"><param name="Name" value="minProb"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4df8d1d064e0269c44c34fd4a7a3b705"><param name="Name" value="mu"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a0f3f27cb8d5144d445ed195ee6dd4f50"><param name="Name" value="numCurvePoints"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4b619ee914b6d9d8490509e1db377731"><param name="Name" value="numDataPoints"></OBJECT>
@@ -60,11 +62,12 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a152813776642300c309cea4b5e1617d0"><param name="Name" value="parameterStepMenuFunction"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a5f16bd6445334b527ea2ac2b4d035723"><param name="Name" value="PI"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a6a90ae33df734ef69a88ff3e98e51ba8"><param name="Name" value="prob"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a8c483df078bca8d56bb115d919fad0b3"><param name="Name" value="randomPoints"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1d2c4747132d1e5f8a236046d2a3442f"><param name="Name" value="readFile"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#acc1ffe65e6869931318610cae7210078"><param name="Name" value="reshape"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#ae11aeeb83e22b5b7f1e6b4347eb1daa6"><param name="Name" value="sigma"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a98ec2c327bb359692043e43a6805f486"><param name="Name" value="specialKey"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#abe974b6ebeafd39cc635f9af5b20fdc4"><param name="Name" value="testForDistro"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#adcefcaa584c1eff30b4e85dc981cbe27"><param name="Name" value="testForDistro"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a7a3bcf29c9207c9e1d8b5c5038528334"><param name="Name" value="topMenuFunc"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a2474a5474cbff19523a51eb1de01cda4"><param name="Name" value="width"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a7510815f15b91f88cbb0a144aba5b211"><param name="Name" value="world_x_max"></OBJECT>
@@ -79,6 +82,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#afff305262d54ff700b916f1d64fb77e3"><param name="Name" value="fileMenuFunction"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1919d37919306ece48344c9b78f2f49c"><param name="Name" value="fileName1"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a5907c9b35ea0c7552349afe8ffca918f"><param name="Name" value="fileName2"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#af59783448e75cddb0d724fe38601c083"><param name="Name" value="generator"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#ad12fc34ce789bce6c8a05d8a17138534"><param name="Name" value="height"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#afc0f28ef3902281e286021b87b6c526e"><param name="Name" value="histogramMenuFunction"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a2858154e2009b0e6e616f313177762bc"><param name="Name" value="init"></OBJECT>
@@ -90,6 +94,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4009ccffbcbaa71f27a100996637ef55"><param name="Name" value="maxProb"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a19add5f2c5e6fb0557394132cdb24b6c"><param name="Name" value="MenuPicker"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1fac701369b1197497f7c698ad74386d"><param name="Name" value="minimum"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#af12a7dba0e528259c181ee79e80ad106"><param name="Name" value="minProb"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4df8d1d064e0269c44c34fd4a7a3b705"><param name="Name" value="mu"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a0f3f27cb8d5144d445ed195ee6dd4f50"><param name="Name" value="numCurvePoints"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a4b619ee914b6d9d8490509e1db377731"><param name="Name" value="numDataPoints"></OBJECT>
@@ -103,11 +108,12 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="utility_8h.html#a24026d95cfb833a1c3cbc5cc6571929e"><param name="Name" value="utility.h"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a6a90ae33df734ef69a88ff3e98e51ba8"><param name="Name" value="prob"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a8c483df078bca8d56bb115d919fad0b3"><param name="Name" value="randomPoints"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a1d2c4747132d1e5f8a236046d2a3442f"><param name="Name" value="readFile"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#acc1ffe65e6869931318610cae7210078"><param name="Name" value="reshape"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#ae11aeeb83e22b5b7f1e6b4347eb1daa6"><param name="Name" value="sigma"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a98ec2c327bb359692043e43a6805f486"><param name="Name" value="specialKey"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#abe974b6ebeafd39cc635f9af5b20fdc4"><param name="Name" value="testForDistro"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#adcefcaa584c1eff30b4e85dc981cbe27"><param name="Name" value="testForDistro"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="data__analysis_8cpp.html#a7a3bcf29c9207c9e1d8b5c5038528334"><param name="Name" value="topMenuFunc"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="utility_8cpp.html#a24026d95cfb833a1c3cbc5cc6571929e"><param name="Name" value="utility.cpp"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="utility_8h.html#a24026d95cfb833a1c3cbc5cc6571929e"><param name="Name" value="utility.h"></OBJECT>
